@@ -50,7 +50,7 @@ class Delay implements GenericMutation {
   pause() {
     if (this._paused) return;
     // to pause, clear the timeout and rewrite this._duration with whatever time is remaining
-    const elapsedDelay = performance.now() - (this._startTime || 0);
+    const elapsedDelay = performanceNow() - (this._startTime || 0);
     this._duration = Math.max(0, this._duration - elapsedDelay);
     clearTimeout(this._timeout);
     this._paused = true;
@@ -58,7 +58,7 @@ class Delay implements GenericMutation {
 
   resume() {
     if (!this._paused) return;
-    this._startTime = performance.now();
+    this._startTime = performanceNow();
     // @ts-ignore return type of "setTimeout" in builds is parsed as `number` instead of `Timeout`
     this._timeout = setTimeout(() => this.cancel(), this._duration);
     this._paused = false;
@@ -130,7 +130,7 @@ export default class Mutation<
     }
     this._renderState = renderState;
     this._startState = renderState.state;
-    this._startTime = performance.now();
+    this._startTime = performanceNow();
     this._frameHandle = requestAnimationFrame(this._tick);
     return new Promise((resolve) => {
       this._resolve = resolve;
@@ -152,7 +152,7 @@ export default class Mutation<
     if (this._frameHandle) {
       cancelAnimationFrame(this._frameHandle);
     }
-    this._startPauseTime = performance.now();
+    this._startPauseTime = performanceNow();
   }
 
   resume() {
@@ -160,7 +160,7 @@ export default class Mutation<
       return;
     }
     this._frameHandle = requestAnimationFrame(this._tick);
-    this._pausedDuration += performance.now() - this._startPauseTime;
+    this._pausedDuration += performanceNow() - this._startPauseTime;
     this._startPauseTime = null;
   }
 
